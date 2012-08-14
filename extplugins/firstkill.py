@@ -1,7 +1,7 @@
 # firstkill Plugin
 
 __author__  = 'PtitBigorneau www.ptitbigorneau.fr'
-__version__ = '1.4'
+__version__ = '1.4.1'
 
 import b3
 import b3.plugin
@@ -29,8 +29,10 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
         self._adminPlugin.registerCommand(self, 'firstkill',self._adminlevel, self.cmd_firstkill)
         self._adminPlugin.registerCommand(self, 'firsttk',self._adminlevel, self.cmd_firsttk)
+
+        self.gamename = self.console.game.gameName
         
-        if self.console.game.gameName == 'iourt41':
+        if  self.gamename == 'iourt41':
             self._adminPlugin.registerCommand(self, 'firsths',self._adminlevel, self.cmd_firsths)
 
     def onLoadConfig(self):
@@ -55,7 +57,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
             client = event.client
             target = event.target
             
-            if self.console.game.gameName == 'iourt41':
+            if  self.gamename == 'iourt41':
             
                 weapon = event.data[1]
                 hitlocation = event.data[2]
@@ -76,7 +78,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
                 if self._kill == 1:     
                 
-                    if self.console.game.gameName == 'iourt41':
+                    if self.gamename == 'iourt41':
                         
                         if self._hs == 1 and self._hsonoff == "on":
                             
@@ -88,10 +90,14 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
                             self.console.write('bigtext"^2First Kill ^3: %s killed %s"' % (client.exactName, target.exactName))
 
+                    elif self.gamename[:3] == "cod":
+
+                        self.console.say("^2First Kill ^3: %s killed %s" % (client.exactName, target.exactName))
+                    
                     else:
 
                         self.console.saybig("^2First Kill ^3: %s killed %s" % (client.exactName, target.exactName))
-                        #self.console.say("^2First Kill ^3: %s killed %s" % (client.exactName, target.exactName))
+
             if self._hsonoff == "on":
 
                 if self._kill == 1:
@@ -112,14 +118,17 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
             if self._tk == 1:
           
-                if self.console.game.gameName == 'iourt41':
+                if self.gamename == 'iourt41':
 
                     self.console.write('bigtext"^1First TeamKill ^3:%s killed %s"' % (client.exactName, target.exactName))
+                
+                elif self.gamename[:3] == "cod":
+
+                    self.console.say("^1First TeamKill ^3:%s killed %s" % (client.exactName, target.exactName))
                 
                 else:
 
                     self.console.saybig("^1First TeamKill ^3:%s killed %s" % (client.exactName, target.exactName))
-                    #self.console.say("^1First TeamKill ^3:%s killed %s" % (client.exactName, target.exactName))
                 
     def cmd_firstkill(self, data, client, cmd=None):
         
