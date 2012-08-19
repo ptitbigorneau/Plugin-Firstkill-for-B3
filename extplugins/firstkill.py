@@ -1,7 +1,7 @@
 # firstkill Plugin
 
 __author__  = 'PtitBigorneau www.ptitbigorneau.fr'
-__version__ = '1.4.1'
+__version__ = '1.5'
 
 import b3
 import b3.plugin
@@ -13,6 +13,10 @@ class FirstkillPlugin(b3.plugin.Plugin):
     _kill = 0
     _tk = 0
     _hs = 0
+    _fkonoff = "on"
+    _tkonoff = "on"
+    _hsonoff = "on"
+    _adminlevel = 100
 
     def onStartup(self):
 
@@ -29,18 +33,42 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
         self._adminPlugin.registerCommand(self, 'firstkill',self._adminlevel, self.cmd_firstkill)
         self._adminPlugin.registerCommand(self, 'firsttk',self._adminlevel, self.cmd_firsttk)
-
-        self.gamename = self.console.game.gameName
         
-        if  self.gamename == 'iourt41':
+        self.gamename = self.console.game.gameName
+
+        if self.gamename == 'iourt41' or self.gamename == 'iourt42':
+            
             self._adminPlugin.registerCommand(self, 'firsths',self._adminlevel, self.cmd_firsths)
+
+        else
+
+            self._hsonoff = "off"
 
     def onLoadConfig(self):
 
-        self._tkonoff = self.config.get('settings', 'tkonoff')
-        self._fkonoff = self.config.get('settings', 'fkonoff')
-        self._hsonoff = self.config.get('settings', 'hsonoff')
-        self._adminlevel = self.config.get('settings', 'adminlevel')
+        try:
+            self._fkonoff = self.config.get('settings', 'fkonoff')
+        except Exception, err:
+            self.warning("Using default value %s for firstkill. %s" % (self._fkonoff, err))
+        self.debug('firstkill : %s' % self._fkonoff)
+            
+        try:
+            self._tkonoff = self.config.get('settings', 'tkonoff')
+        except Exception, err:
+            self.warning("Using default value %s for firsttk. %s" % (self._tkonoff, err))
+        self.debug('firsttk : %s' % self._tkonoff)
+        
+        try:
+            self._hsonoff = self.config.get('settings', 'hsonoff')
+        except Exception, err:
+            self.warning("Using default value %s for firsths. %s" % (self._hsonoff, err))
+        self.debug('firsths : %s' % self._hsonoff)
+        
+        try:
+              self._adminlevel = self.config.getint('settings', 'adminlevel')
+        except Exception, err:
+            self.warning("Using default value %s for adminlevel. %s" % (self._adminlevel, err))
+        self.debug('min level for cmds : %s' % self._adminlevel)
 
     def onEvent(self, event):
         
@@ -57,7 +85,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
             client = event.client
             target = event.target
             
-            if  self.gamename == 'iourt41':
+            if self.gamename == 'iourt41' or self.gamename == 'iourt42':
             
                 weapon = event.data[1]
                 hitlocation = event.data[2]
@@ -70,15 +98,23 @@ class FirstkillPlugin(b3.plugin.Plugin):
             
             if weapon not in (23, 25):
                 
-                if hitlocation == "0" or hitlocation == "1":
+                if self.gamename == 'iourt41':
+
+                    if hitlocation == "0" or hitlocation == "1":
                     
-                    self._hs += 1
+                        self._hs += 1
+
+                if self.gamename == 'iourt42':
+
+                    if hitlocation == "1" or hitlocation == "4":
+                    
+                        self._hs += 1
 
             if self._fkonoff == "on":
 
                 if self._kill == 1:     
                 
-                    if self.gamename == 'iourt41':
+                    if self.gamename == 'iourt41' or self.gamename == 'iourt42':
                         
                         if self._hs == 1 and self._hsonoff == "on":
                             
@@ -106,7 +142,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
                 if self._hs == 1:     
   
-                    self.console.write('bigtext"^5First Kill by Headshot ^3: %s"' % (client.exactName))
+                    self.console.write('bigtext"^5First Kill ^5By Headshot ^3: %s killed %s"' % (client.exactName, target.exactName))
                     self._hs += 1
 
         if (event.type == b3.events.EVT_CLIENT_KILL_TEAM) and (self._tkonoff=="on"):
@@ -118,10 +154,10 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
             if self._tk == 1:
           
-                if self.gamename == 'iourt41':
+                if self.gamename == 'iourt41' or self.gamename == 'iourt42':
 
                     self.console.write('bigtext"^1First TeamKill ^3:%s killed %s"' % (client.exactName, target.exactName))
-                
+
                 elif self.gamename[:3] == "cod":
 
                     self.console.say("^1First TeamKill ^3:%s killed %s" % (client.exactName, target.exactName))
@@ -277,7 +313,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
 
             else:
                 
-                client.message('first headshot is already ^1disabled')                
+                client.message('first headshot is already ^1disabled')
 
                 return False
 
