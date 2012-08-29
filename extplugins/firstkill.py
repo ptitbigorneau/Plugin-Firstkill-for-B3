@@ -65,7 +65,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
         self.debug('firsths : %s' % self._hsonoff)
         
         try:
-              self._adminlevel = self.config.getint('settings', 'adminlevel')
+            self._adminlevel = self.config.getint('settings', 'adminlevel')
         except Exception, err:
             self.warning("Using default value %s for adminlevel. %s" % (self._adminlevel, err))
         self.debug('min level for cmds : %s' % self._adminlevel)
