@@ -40,7 +40,7 @@ class FirstkillPlugin(b3.plugin.Plugin):
             
             self._adminPlugin.registerCommand(self, 'firsths',self._adminlevel, self.cmd_firsths)
 
-        else
+        else:
 
             self._hsonoff = "off"
 
